@@ -1,0 +1,43 @@
+// PRESS CTRL+ENTER TO RELOAD SHADER
+// reference at https://github.com/charlieroberts/wgsl_live
+//fragment means next function is the entry point for the primary rendering of the fragments
+//fs is the function name
+//builtin means its a variable that's built into the programming environment
+//position is used to get position inside frame buffer - pixel coords for where you are in the screen
+//return a 4 item point vector to location(0) - the first rendering target
+//you can setup multiple locations to blend things together
+@fragment 
+fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {
+  // get normalized texture coordinates (aka uv) in range 0-1
+	var p :vec2f = (pos.xy/res);
+	p -= vec2f(0.5, 0.5);
+
+	let pxMult = res.x / min(res.x, res.y);
+	let pyMult = res.y / min(res.x, res.y);
+	p.x *= pxMult;
+	p.y *= pyMult;
+
+
+	var color: vec4f = vec4f(0.);
+	color += ( sin(frame/120) / length(p)) * vec4f(0.5, 0.5, 0., 0.);
+	color += ( sin(frame/180) / length(p)) * vec4f(0., 0.5, 1., 0.);
+	color += ( sin(frame/60) / length(p)) * vec4f(0.5, 1., 0.5, 0.);
+
+	let center: vec2f = vec2f(0.);
+
+
+	if ( distance(p, center) > 0.4) {
+		color += abs( (0.5 + sin(seconds()) * 0.5 * p.x) / p.y);
+	}
+
+	color.r = fract(color.r);
+	color.g = fract(color.g);
+	color.b = fract(color.b);
+
+
+	return vec4f(color.r, color.g, color.b, 1);
+
+}
+
+//uniform - doesnt change per pixel - mostly comes from CPU to GPU on init or frame or whatever
+//varying variables do change per pixel
