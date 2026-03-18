@@ -19,7 +19,7 @@ fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {
 
 
 	var color: vec4f = vec4f(0.);
-	color += ( sin(frame/120) / length(p)) * vec4f(0.5, 0.5, 0., 0.);
+	color += ( sin(frame/140) / length(p)) * vec4f(0.5, 0.5, 0., 0.);
 	color += ( sin(frame/180) / length(p)) * vec4f(0., 0.5, 1., 0.);
 	color += ( sin(frame/60) / length(p)) * vec4f(0.5, 1., 0.5, 0.);
 
