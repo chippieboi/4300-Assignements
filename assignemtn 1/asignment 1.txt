@@ -6,6 +6,32 @@
 //position is used to get position inside frame buffer - pixel coords for where you are in the screen
 //return a 4 item point vector to location(0) - the first rendering target
 //you can setup multiple locations to blend things together
+
+
+fn swing(p :vec2f, color: vec4f) -> vec4f{
+	let center: vec2f = vec2f(0.);
+	var newColor = color;
+
+
+	if ( distance(p, center) > 0.4) {
+		newColor += abs( (0.5 + sin(seconds()) * 0.5 * p.x) / p.y);
+	}
+
+
+	return newColor;
+}
+
+fn sides(p : vec2f, color: vec4f) -> vec4f{
+
+	let center: vec2f = vec2f(0.);
+	var newColor = color;
+	let mask = step(0.4, distance(p, center));
+	newColor = mix(newColor, newColor + abs( (0.5 * 0.5 * p.x) / p.y), mask);
+
+	return newColor;
+
+}
+
 @fragment 
 fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {
   // get normalized texture coordinates (aka uv) in range 0-1
@@ -20,24 +46,41 @@ fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {
 
 	var color: vec4f = vec4f(0.);
 	color += ( sin(frame/140) / length(p)) * vec4f(0.5, 0.5, 0., 0.);
-	color += ( sin(frame/180) / length(p)) * vec4f(0., 0.5, 1., 0.);
-	color += ( sin(frame/60) / length(p)) * vec4f(0.5, 1., 0.5, 0.);
+	color += ( cos(frame/180) / length(p)) * vec4f(0., 0.5, 1., 0.);
+	//color += ( sin(frame/60) / length(p)) * vec4f(0.5, 1., 0.5, 0.);
+
+	//NO SWING
+	//color = sides(p, color);
+
+	//SWING THE SIDES
+	color = swing(p, color);
 
 	let center: vec2f = vec2f(0.);
-
-
-	if ( distance(p, center) > 0.4) {
-		color += abs( (0.5 + sin(seconds()) * 0.5 * p.x) / p.y);
-	}
 
 	color.r = fract(color.r);
 	color.g = fract(color.g);
 	color.b = fract(color.b);
 
+	//fade to black along y=0
+	var fadeMask = step(0.4, distance(p, center));
+
+	color = mix(color, color * vec4f(abs(p.y * 4)), fadeMask);
+
+
+	//fade to black at center of circle
+	fadeMask = step(distance(p, center), 0.1);
+
+	//color = mix(color, color * vec4f(abs(p.y * p.x)), fadeMask);
+
+	//feedback
+
+	let lerpAlpha = 0.9;
+	let feedback = lastframe(uvN(pos.xy));
+
+	color = (color * (1-lerpAlpha) + feedback * lerpAlpha);
 
 	return vec4f(color.r, color.g, color.b, 1);
 
 }
-
 //uniform - doesnt change per pixel - mostly comes from CPU to GPU on init or frame or whatever
 //varying variables do change per pixel
