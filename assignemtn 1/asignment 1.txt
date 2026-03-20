@@ -50,10 +50,10 @@ fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {
 	//color += ( sin(frame/60) / length(p)) * vec4f(0.5, 1., 0.5, 0.);
 
 	//NO SWING
-	//color = sides(p, color);
+	color = sides(p, color);
 
 	//SWING THE SIDES
-	color = swing(p, color);
+	//color = swing(p, color);
 
 	let center: vec2f = vec2f(0.);
 
@@ -70,7 +70,7 @@ fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {
 	//fade to black at center of circle
 	fadeMask = step(distance(p, center), 0.1);
 
-	//color = mix(color, color * vec4f(abs(p.y * p.x)), fadeMask);
+	//color = mix(color, clamp(color * vec4f(abs(p.y * p.x)), vec4f(p.y * p.x), vec4f(p.x * p.y) ), fadeMask);
 
 	//feedback
 
