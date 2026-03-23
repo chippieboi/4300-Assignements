@@ -1,11 +1,25 @@
-The aesthetic intent was to make a color bomb. I wanted to make something that was kind of hypnotic and somewhat evolving as it played out. All of the color mixing and sin and cos usage was to get the colors to ebb and flow. I also found that the use of sin and cos got the center circle to collapse on itself and then explode with colors, which I thought was a really cool effect. It was meant to be eye catching and maybe something to use as a computer background/screensaver if you're daring enough. The swinging side to side was definitely influenced by my love for bending light. The black fade across y=0 on the screen was to make you feel lost in the colors and like you were surrounded. It also helped to get rid of the compressed pixel colors and give a horizon line to look at while the colors explode around you. I didn't want total pixel chaos as you put it, but definitely something complex and enjoyable to look at if your brain reacts to it a certain way (mine certainly does).
+The aesthetic intent was to make a color bomb. I wanted to make something that was kind of hypnotic and somewhat evolving as it played out.
+All of the color mixing and sin and cos usage was to get the colors to ebb and flow. I also found that the use of sin and cos got the center
+circle to collapse on itself and then explode with colors, which I thought was a really cool effect. It was meant to be eye-catching and maybe
+something to use as a computer background/screensaver if you're daring enough. The swinging side to side was definitely influenced by my love
+for bending light. The black fade across y=0 on the screen was to make you feel lost in the colors and like you were surrounded. It also helped
+to get rid of the compressed pixel colors and give a horizon line to look at while the colors explode around you. I didn't want total pixel
+chaos as you put it, but definitely something complex and enjoyable to look at if your brain reacts to it a certain way (mine certainly does).
 
-I was super interested in exploring shaders in a way that makes really pretty lights (light the aurora borealis or black holes) and having them bend and explode. I wasn't really certain how to add motion to the shader, but the use or sin and cos was the main way I ended up doing it. I did a lot of masking to ignore the center circle to give it the explosions while the outside got augmented. The effect I'm the most happy with is the fade to black along the center horizontal line outside the center circle. It was a combination of the masking I learned and learning how the shader applies to the pixels. It made a really satisfying horizon line and it's my favorite addition to the code full stop.
+I was super interested in exploring shaders in a way that makes really pretty lights (light the aurora borealis or black holes) and having them
+bend and explode. I wasn't really certain how to add motion to the shader, but the use or sin and cos was the main way I ended up doing it. I
+did a lot of masking to ignore the center circle to give it the explosions, while the outside got augmented. The effect I'm the happiest with
+is the fade to black along the center horizontal line outside the center circle. It was a combination of the masking I learned and learning
+how the shader applies to the pixels. It made a really satisfying horizon line, and it's my favorite addition to the code, full stop.
 
 =======
 Feedback
 =======
-The feedback I got was "ow my eyes", "blue+green is pretty", "LSD black-hole simulator", "silent film frfr", and a comment about adding a fake to black in the center circle of colors. I tried to get the center to fade to black in the center circle, but honestly couldn't figure it out. They really liked the "black hole aesthetic", which was the center circle with exploding colors and the outer thirds of the screen being like the accretion disks. They kind of noticed the blur added with the lastFrame call, but that was meant to be subtle so I'm happy with that. It definitely matched what I expected, not everyone has the brain chemistry to actually enjoy staring at it like I do.
+The feedback I got was "ow my eyes", "blue+green is pretty", "LSD black-hole simulator", "silent film frfr", and a comment about adding a fake
+to black in the center circle of colors. I tried to get the center to fade to black in the center circle, but I honestly couldn't figure it out.
+They really liked the "black hole aesthetic", which was the center circle with exploding colors and the outer thirds of the screen being like
+the accretion disks. They kind of noticed the blur added with the lastFrame call, but that was meant to be subtle, so I'm happy with that. It
+definitely matched what I expected; not everyone has the brain chemistry to actually enjoy staring at it like I do.
 
 ======
 Functions Used
