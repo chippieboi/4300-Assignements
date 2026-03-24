@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang=en>
+
+  <head>
+    <meta charset=utf-8>
+    <script src=gulls.js></script>
+    <style> body { margin:0 } </style> 
+    <script>
+
+
+// because gulls uses the await keyword, we have to wrap our
+// code in an async function and call it. when we use js modules we
+// don't have to do this, which is nice... but wrapping isn't that
+// big of a deal.
+async function run() {
+    const sg = await gulls.init()
+
+    // a simple vertex shader to make a quad
+    const quadVertexShader = gulls.constants.vertex
+
+    // our fragment shader, just returns blue
+    const fragmentShader = `
+    @group(0) @binding(0) var<uniform> res : vec2f;
+    @group(0) @binding(1) var<uniform> frame: f32;
+    @group(0) @binding(2) var<uniform> slider: f32;
+
+
+    @fragment
+    fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {
+        let uv = pos.xy / res * slider;
+        return vec4f(uv.x, .5 + sin(frame/60) * 0.5, uv.y, 1.);
+    }
+    `
+
+    // our vertex + fragment shader together
+    const shader = quadVertexShader + fragmentShader
+
+    const slider = document.querySelector('#slider')
+    let slider_u = sg.uniform(slider.value)
+
+    let frame = sg.uniform(0)
+    
+    // create a render pass
+    const renderPass = await sg.render({
+        shader, 
+        data:[
+            sg.uniform([window.innerWidth, window.innerHeight]),
+            frame,
+            slider_u
+        ],
+        onframe() {frame.value++}
+    })
+
+    slider.oninput = ()=> slider_u.value = slider.value
+
+    // run our render pass
+    sg.run( renderPass )
+}
+
+run()
+
+
+    </script>
+  </head>
+  
+  <body>
+    <canvas></canvas>
+    <input 
+       type=range 
+       id=slider 
+       min=0 max=4 
+       step=any 
+       style='position:absolute; left:0; top:0; z-index:1'
+    /> 
+  </body>
+  
+</html>
