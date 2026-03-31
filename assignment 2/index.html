@@ -17,7 +17,7 @@
 async function run() {
     const sg = await gulls.init()
 
-    await Video.init()
+    //await Video.init()
 
     Mouse.init()
 
@@ -35,24 +35,44 @@ async function run() {
     //buffer, sampler
     @group(0) @binding(4) var videoSampler: sampler;
     @group(0) @binding(5) var backBuffer: texture_2d<f32>;
-    @group(1) @binding(0) var videoBuffer: texture_external;
+    //@group(1) @binding(0) var videoBuffer: texture_external;
 
 
     @fragment
     fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {
         let uv = pos.xy / res;
 
-        let video = textureSampleBaseClampToEdge( videoBuffer, videoSampler, uv);
+        //let video = textureSampleBaseClampToEdge( videoBuffer, videoSampler, uv);
 
-        let fb = textureSample( backBuffer, videoSampler, uv);
+        let fb : vec4f = textureSample( backBuffer, videoSampler, uv);
 
-        var out = video * 0.05 + fb * 0.975;
+        //var out = video * 0.05 + fb * 0.975;
 
-        out.r *= 0.01 + slider;
-        out.g *= 0.5 + 0.5 * sin(frame/60);
-        out.b *= mouse.y;
+        var new_uv = grid(uv, 10, 10);
 
-        return vec4f(out.rgb, 1.);
+        var color = vec3f(circle(new_uv, (sin(frame * 0.05) + 1) / 10   ));
+
+        //color = color * -1 + 1;
+
+        return vec4f(color, 1.);
+    }
+
+    fn grid(uv: vec2f, col: f32, row: f32) -> vec2f {
+        var p = uv;
+        p = vec2f(p.x * col, p.y * row);
+
+        p.x += step(1., mymod(p.y, 2.0)) * 0.5;
+
+        return fract(p);
+    }
+
+    fn mymod(x: f32, y: f32) -> f32 {
+        return x - y * floor(x/y);
+    }
+
+    fn circle(uv: vec2f, radius: f32) -> f32 {
+        var l: vec2f = uv - vec2f(0.5);
+        return 1. - smoothstep(radius - (radius * 0.01), radius + (radius * 0.01), dot(l,l) * 4.0);
     }
     `
 
@@ -80,7 +100,7 @@ async function run() {
             mouse,
             sg.sampler(),
             feedback_t,
-            sg.video(Video.element)
+            //sg.video(Video.element)
         ],
         onframe() {frame.value++; mouse.value = Mouse.values},
         copy:feedback_t
