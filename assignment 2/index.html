@@ -4,6 +4,8 @@
   <head>
     <meta charset=utf-8>
     <script src=gulls.js></script>
+    <script src=mouse.js></script>
+    <script src=video.js></script>
     <style> body { margin:0 } </style> 
     <script>
 
@@ -15,6 +17,11 @@
 async function run() {
     const sg = await gulls.init()
 
+    await Video.init()
+
+    Mouse.init()
+
+
     // a simple vertex shader to make a quad
     const quadVertexShader = gulls.constants.vertex
 
@@ -23,12 +30,29 @@ async function run() {
     @group(0) @binding(0) var<uniform> res : vec2f;
     @group(0) @binding(1) var<uniform> frame: f32;
     @group(0) @binding(2) var<uniform> slider: f32;
+    @group(0) @binding(3) var<uniform> mouse: vec2f;
+    
+    //buffer, sampler
+    @group(0) @binding(4) var videoSampler: sampler;
+    @group(0) @binding(5) var backBuffer: texture_2d<f32>;
+    @group(1) @binding(0) var videoBuffer: texture_external;
 
 
     @fragment
     fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {
-        let uv = pos.xy / res * slider;
-        return vec4f(uv.x, .5 + sin(frame/60) * 0.5, uv.y, 1.);
+        let uv = pos.xy / res;
+
+        let video = textureSampleBaseClampToEdge( videoBuffer, videoSampler, uv);
+
+        let fb = textureSample( backBuffer, videoSampler, uv);
+
+        var out = video * 0.05 + fb * 0.975;
+
+        out.r *= 0.01 + slider;
+        out.g *= 0.5 + 0.5 * sin(frame/60);
+        out.b *= mouse.y;
+
+        return vec4f(out.rgb, 1.);
     }
     `
 
@@ -38,7 +62,13 @@ async function run() {
     const slider = document.querySelector('#slider')
     let slider_u = sg.uniform(slider.value)
 
+    //shader uniforms
     let frame = sg.uniform(0)
+    const mouse = sg.uniform(Mouse.values)
+
+    //video stuff
+    const back = new Float32Array(gulls.width * gulls.height * 4)
+    const feedback_t = sg.texture(back)
     
     // create a render pass
     const renderPass = await sg.render({
@@ -46,9 +76,15 @@ async function run() {
         data:[
             sg.uniform([window.innerWidth, window.innerHeight]),
             frame,
-            slider_u
+            slider_u,
+            mouse,
+            sg.sampler(),
+            feedback_t,
+            sg.video(Video.element)
         ],
-        onframe() {frame.value++}
+        onframe() {frame.value++; mouse.value = Mouse.values},
+        copy:feedback_t
+        //onframe() {mouse.value = Mouse.values}
     })
 
     slider.oninput = ()=> slider_u.value = slider.value
