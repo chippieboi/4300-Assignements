@@ -43,7 +43,7 @@ async function run() {
     fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {
         let uv = pos.xy / res;
 
-        let grid_size = mix(slider, slider * 2.0, space);
+        let grid_size = slider;
 
         var pixel_uv = floor(uv * grid_size) / grid_size;
 
@@ -63,6 +63,8 @@ async function run() {
         let b = random(pixel_uv + vec2f(mymod(frame, 120.0) * 0.03));
 
         color += vec3f(r, g, b) * impact * 0.5;
+
+        color = mix(color, vec3f(1.0) - color, space);
 
         return vec4f(color, 1.);
     }
