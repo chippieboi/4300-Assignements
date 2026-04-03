@@ -1,0 +1,21 @@
+I wanted to mess around with pixelation a lot. From the patterns and noise sections in the book of shaders, I liked seeing the grid-like structure.
+When I added the pixelation, it reminded me of an old TV, so I tried to add a glitchy section based on mouse location. I ended up using the simple
+sin-based noise generation algorithm for it and adding those values to the color's RGB values. I also used this as a way to get a bit more comfortable
+with JS, as I don't have too much experience with it. The gulls implementation was pretty easy to use, though it was weird looking at my shader code
+be a solid blue because of the JS character color in VSCode. I also wanted to figure out how to use the mod operator in WGSL as I had wanted to in
+assignment 1, but couldn't find anything for it. Finally found something for it and got to use it to cycle through colors in the glitchy mouse
+highlight.
+
+The aesthetic I went for was an old TV with a glitchy spot. The resolution changes were fun to play around with, though no aesthetic intent was
+directly behind them. The inverting colors was a fun addition I added to increase the glitchiness of the screen.
+
+Feedback:
+The mouse color adjustment wasn't bound to UV. I honestly didn't notice it until they pointed it out. They didn't pick up on the old-school TV, though
+they did pick up on the glitchiness that the area around the mouse was supposed to give off. They also wanted more movement on the screen, which I don't
+entirely disagree with, it just wasn't something I was super focused on. All the features seemed to work for them, as well as for me.
+
+Interaction mechanisms:
+Video
+Mouse
+Space-bar (invert color)
+Slider (adjust pixel resolution)
