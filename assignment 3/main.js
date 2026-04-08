@@ -51,8 +51,11 @@ pane.addBinding( k, 'value', { min: 0.0, max: 1.0, step: 0.01, label: 'K' } )
 pane.addButton({ title: 'Reset' }).on('click', () => {
   resetState(state, window.innerWidth, window.innerHeight)
 
-  statebuffer1 = sg.buffer(state)
-  statebuffer2 = sg.buffer(state)
+  //statebuffer1.clear()
+  //statebuffer2.clear()
+
+  statebuffer1.write(state)
+  statebuffer2.write(state)
 })
 
 const renderPass = await sg.render({
