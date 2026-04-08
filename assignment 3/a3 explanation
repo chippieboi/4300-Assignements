@@ -1,0 +1,17 @@
+I set the Da, Db, F, and K variables to be controls in Tweakpane. I tried to explore the flow option, but ended up doing something different that fulfilled the requirement.
+I added a flow function to my compute shader that returns an augmented vec2f based on the pixel's x and y coords. Specifically, it returns the vec2f(sin(y*2)+1, cos(x*2)).
+I then use this vector to offset where the laplace is being calculated, and treat the rest of the reaction diffusion calcuations the same. So the simulation is calculating
+The Laplace function on a position that is offset by the flow function instead of the pixel's true position. I really wanted to make a water or river effect, and this ended
+up doing exactly what I wanted, albeit in a way that I didn't fully intend. The flow function also adds some black rectangles on the screen that the pixels seem to flow
+around, which is a really cool effect, and I'm not entirely sure why those rectangles exist.
+
+Feedback:
+Options barely affect anything to the point I'm not even sure if they're bound
+Looks cool, but there is a seam in the middle of the screen
+Control is pretty lacking, in terms of parameters
+I do really like the water aesthetic.
+No idea how you got those rectangles.
+At default settings at least, it kinda just turns into pure wave, with no normal water
+
+They saw the water simulations, which was cool, but the controls definitely have a pretty noticeable impact on the simulation. The seam in the middle of the screen is because
+of resolution issues. It looks fine on 1080p, but weird on 2k (from my testing).
