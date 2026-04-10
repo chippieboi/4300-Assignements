@@ -41,7 +41,7 @@ const pane = new Pane()
 const da = sg.uniform(1.0)
 const db = sg.uniform(0.5)
 const f = sg.uniform(0.02)
-const k = sg.uniform(0.35)
+const k = sg.uniform(0.38)
 
 pane.addBinding( da, 'value', { min: 0.0, max: 1.0, step: 0.01, label: 'Da' } )
 pane.addBinding( db, 'value', { min: 0.0, max: 1.0, step: 0.01, label: 'Db' } )
