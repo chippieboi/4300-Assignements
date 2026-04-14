@@ -4,19 +4,17 @@
     <meta charset='utf-8'>
     <script src='main.js' type='module'></script>
 
-    <style>body{margin:0; background:black}</style>
-
     <link rel='shortcut icon' href='data:image/x-icon;,' type='image/x-icon'> 
   </head>
   <body>
+    <span id='buttons'>
+      <button>main.js</button>
+      <button>frag.wgsl</button>
+      <button>compute.wgsl</button>
+    </span>
+
+    <code class='code'></code>
 
     <canvas></canvas>
-    <input 
-       type=range 
-       id=slider 
-       min=-45 max=45 
-       step=.1
-       style='position:absolute; left:0; top:0; z-index:1'
-    /> 
   </body>
 </html>
