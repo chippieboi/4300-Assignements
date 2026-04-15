@@ -10,7 +10,9 @@ struct VertexOutput {
 
 struct Particle {
   pos: vec2f,
-  speed: vec2f
+  speed: vec2f,
+  droplet: f32,
+  padding: f32
 };
 
 @group(0) @binding(0) var<uniform> frame: f32;
@@ -37,9 +39,12 @@ fn rotate(v: vec4f, angle: f32) -> vec4f{
 
 @vertex 
 fn vs( input: VertexInput ) ->  VertexOutput {
-  let size = input.pos * .015;
   let aspect = res.y / res.x;
   let p = state[ input.instance ];
+  let isDroplet = p.droplet > 0.5;
+  let scale = select(0.015, 0.005, isDroplet);
+
+  let size = input.pos * scale;
   
 
   var output: VertexOutput;
@@ -48,12 +53,16 @@ fn vs( input: VertexInput ) ->  VertexOutput {
   vertex = rotate(vertex, angle);
 
   output.position = vertex;
-  output.color = mix(vec3f(0.,0.,.2), vec3f(.2,0.,.7), (p.pos.y+1) / 1.5);
+
+  let rainColor = mix(vec3f(0.,0.,.4), vec3f(.2,0.,.7), (p.pos.y+1.0)/1.5);
+  let splashColor = vec3f(0.3, 0.3, 1.0);
+  output.color = select(rainColor, splashColor, p.droplet > 0.5);
+
   return output; 
 }
 
 @fragment 
 fn fs( input: VertexOutput) -> @location(0) vec4f {;
   let color = input.color;
-  return vec4f( color, .3 );
+  return vec4f( color, .6 );
 }

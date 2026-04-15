@@ -7,7 +7,7 @@ const sg = await gulls.init(),
       compute_shader = await gulls.import( './compute.wgsl' )
 
 const NUM_PARTICLES = 1024, 
-      NUM_PROPERTIES = 4, 
+      NUM_PROPERTIES = 6, 
       state = new Float32Array( NUM_PARTICLES * NUM_PROPERTIES )
 
 for( let i = 0; i < NUM_PARTICLES * NUM_PROPERTIES; i+= NUM_PROPERTIES ) {
@@ -15,6 +15,8 @@ for( let i = 0; i < NUM_PARTICLES * NUM_PROPERTIES; i+= NUM_PROPERTIES ) {
   state[ i + 1 ] = -1 + Math.random() * 2
   state[ i + 2 ] = 0
   state[ i + 3 ] = Math.random() * -10
+  state[ i + 4 ] = 0
+  state[ i + 5 ] = 0
 }
 
 const state_b = sg.buffer( state ),
