@@ -1,0 +1,12 @@
+VIDEO: https://www.bing.com/videos/riverview/relatedvideo?q=minecraft+rain&&mid=1F6383C405E0454EF2D91F6383C405E0454EF2D9&churl=https%3a%2f%2fwww.youtube.com%2fchannel%2fUCL1dpFs5mBGAH0NcYtaOTXw&mcid=E778BA273D704BEAB6B279C694952050&FORM=VRDGAR
+
+The above video is of Minecraft rain. I always loved the effect in-game and thought it'd be fun to try and make it myself.
+I made the rain blue to match and made sure to keep the alpha value pretty low. I added a crosswind slider to add an angle
+to the rain. The rain moves faster with a higher angle to match the visual illusion in real life, though I don't think 
+Minecraft rain has a crosswind in it. The hardest part was adding the bounce along the bottom of the screen. I had to increase
+the amount of parameters and got a really annoying bug because the Particle struct was 2 vec2fs and an f32, but the GPU
+needs the parameters to be a multiple of the largest data structure in the Particle struct (I think), so I had to add a padding
+f32 to it. The extra data acts like a boolean to tell the compute shader if the particle is a droplet or a rain particle at
+that moment. When the rain particle gets to the bottom of the screen it gets a random very small x and a small y velocity.
+At the next pass the now droplet particle has gravity enacted on it until it falls back off the screen and the cycle repeats.
+It makes a fun effect along the bottom of the screen, but it does not work properly with the crosswind effect, but that's fine.
