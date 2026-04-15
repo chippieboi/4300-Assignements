@@ -6,4 +6,4 @@
 
 ## Assignment 3: [website](https://chippieboi.github.io/IMGD-4300-Reaction-Diffusion/), [code](https://github.com/chippieboi/4300-Assignements/tree/main/assignment%203), [explanation](https://github.com/chippieboi/4300-Assignements/blob/main/assignment%203/a3%20explanation)
 
-## Assignemtn 4: [website](), [code](https://github.com/chippieboi/4300-Assignements/tree/main/assignment%204), [explanation](https://github.com/chippieboi/4300-Assignements/blob/main/assignment%204/explanation.txt)
+## Assignemtn 4: [website](https://chippieboi.github.io/4300-Assignment-4/), [code](https://github.com/chippieboi/4300-Assignements/tree/main/assignment%204), [explanation](https://github.com/chippieboi/4300-Assignements/blob/main/assignment%204/explanation.txt)
