@@ -10,3 +10,15 @@ f32 to it. The extra data acts like a boolean to tell the compute shader if the 
 that moment. When the rain particle gets to the bottom of the screen it gets a random very small x and a small y velocity.
 At the next pass the now droplet particle has gravity enacted on it until it falls back off the screen and the cycle repeats.
 It makes a fun effect along the bottom of the screen, but it does not work properly with the crosswind effect, but that's fine.
+
+
+Feedback:
+No customization 😠
+My computer doesn't like it 😠
+Bad 😠
+Magenta 🙂
+Two layers of particles 🙂
+Rectangles 😠
+
+They liked that the splash effect moved with the crosswind. The crosswing was a cool addition. Said that I should change the splash
+particles to squares instead of smaller rectangles
