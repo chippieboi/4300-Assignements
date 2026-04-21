@@ -88,7 +88,7 @@ fn cs(@builtin(global_invocation_id) cell:vec3u)  {
   if (vant.flag == 0.){
     //claim spot
     if(pheromone == 0.){
-      vant.dir += -0.25;
+      vant.dir += -0.1;
       pheremones[pIndex] = 1.;
     } else if(pheromone == 1.){
       pheremones[pIndex] = 0.;
