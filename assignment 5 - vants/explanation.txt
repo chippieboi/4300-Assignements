@@ -1,0 +1,20 @@
+I tried to make something kinda like Splatoon where the different vants fought to color the ground with their color.
+
+Red vants:
+Heavy on conversion. When they find a pheromone that isn't theirs, they convert it to their pheromone. They only turn
+when they find a pheromone that is empty, and they turn to the left
+
+Green vants:
+They love to fill in areas. They mostly stick to their own turf, slowly converting the spaces next to their pheromones
+into their own. If they are in their own pheromone, they keep going in the same direction and don't eat their own pheromone.
+When they find a different pheromone, they convert it and turn left or right depending on if they found nothing, red, or blue.
+
+Blue vants:
+They love to eat the other pheromones. Whenever they find a pheromone, they eat it and leave behind nothing. When they find nothing,
+they leave behind their own pheromone. They only turn when they run into their own pheromone to avoid eating all the pheromones
+the other blue vants have left behind.
+
+The vants have different strategies. The blue vants like to get rid of everything and turn nothing into their own area, avoiding
+the blue pheromone to prevent accidentally erasing what a fellow blue vant has done. The green vants slowly expand their areas,
+focusing on maintaining the spaces they already occupy. They also don't eat their own pheromone. The red vants are kind of the chaos
+vant. They eat their pheromone and replace all other pheromones. They turn erratically and have the weirdest patterns of the three.
