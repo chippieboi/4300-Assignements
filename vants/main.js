@@ -3,7 +3,7 @@ import { default as seagulls } from './gulls.js'
 const WORKGROUP_SIZE = 64,
       NUM_AGENTS = 256,
       DISPATCH_COUNT = [NUM_AGENTS/WORKGROUP_SIZE,1,1],
-      GRID_SIZE = 10,
+      GRID_SIZE = 3,
       STARTING_AREA = .3
 
 const W = Math.round( window.innerWidth  / GRID_SIZE ),
@@ -21,7 +21,23 @@ fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {
   let p = pheromones[ u32(pidx) ];
   let v = render[ u32(pidx) ];
 
-  let out = select( vec3(p) , vec3(1.,0.,0.), v == 1. );
+  var out = vec3(0.);
+
+  if (p == 1.) {
+    out = vec3(.3,0.,0.);
+  } else if (p == 2.) {
+    out = vec3(0.,.3,0.);
+  } else if (p == 3.) {
+    out = vec3(0.,0.,.3);
+  }
+
+  if (v == 1.) {
+    out = vec3(1.,0.,0.);
+  } else if (v == 2.) {
+    out = vec3(0.,1.,0.);
+  } else if (v == 3.) {
+    out = vec3(0.,0.,1.);
+  }
   
   return vec4f( out, 1. );
 }`
@@ -62,13 +78,55 @@ fn cs(@builtin(global_invocation_id) cell:vec3u)  {
   let pIndex    = pheromoneIndex( vant.pos );
   let pheromone = pheremones[ pIndex ];
 
+  //pheromone: 0 - no pheromone
+  //pheromone: 1 - red pheromone
+  //pheromone: 2 - green pheromone
+  //pheromone: 3 - blue pheromone
+
   // if pheromones were found
-  if( pheromone != 0. ) {
-    vant.dir += select(.25,-.25,vant.flag==0.); // turn 90 degrees counter-clockwise
-    pheremones[ pIndex ] = 0.;  // set pheromone flag
-  }else{
-    vant.dir += select(-.25,.25,vant.flag==0.); // turn 90 degrees counter-clockwise
-    pheremones[ pIndex ] = 1.;  // unset pheromone flag
+  //flag = 0 is red, set to 1
+  if (vant.flag == 0.){
+    //claim spot
+    if(pheromone == 0.){
+      vant.dir += -0.25;
+      pheremones[pIndex] = 1.;
+    } else if(pheromone == 1.){
+      pheremones[pIndex] = 0.;
+    } else if(pheromone == 2.){
+      pheremones[pIndex] = 1.;
+    } else if(pheromone == 3.){
+      pheremones[pIndex] = 1.;
+    }
+  } 
+  
+  //flag = 1 is green, set to 2
+  else if(vant.flag == 1.){
+    //claim spot
+    if(pheromone == 0.){
+      vant.dir += -0.25;
+      pheremones[pIndex] = 2.;
+    } else if(pheromone == 1.){
+      vant.dir += 0.25;
+      pheremones[pIndex] = 2.;
+    } else if(pheromone == 3.){
+      vant.dir += -0.25;
+      pheremones[pIndex] = 2.;
+    }
+  }
+  
+  //flag = 2 is blue, set to 3
+  else if(vant.flag == 2.){
+    //claim spot
+    if(pheromone == 0.){
+      pheremones[pIndex] = 3.;
+    } else if(pheromone == 1.){
+      pheremones[pIndex] = 0.;
+    } else if(pheromone == 2.){
+      pheremones[pIndex] = 0.;
+    } else if(pheromone == 3.){
+      vant.dir += 0.25;
+      pheremones[pIndex] = 0.;
+    }
   }
 
   // calculate direction based on vant heading
@@ -82,7 +140,7 @@ fn cs(@builtin(global_invocation_id) cell:vec3u)  {
   // if we see a value of one a vant is there and we can color
   // it accordingly. in our JavaScript we clear the buffer on every
   // frame.
-  render[ pIndex ] = 1.;
+  render[ pIndex ] = vant.flag + 1.;
 }`
  
 const NUM_PROPERTIES = 4 // must be evenly divisble by 4!
@@ -95,7 +153,7 @@ for( let i = 0; i < NUM_AGENTS * NUM_PROPERTIES; i+= NUM_PROPERTIES ) {
   vants[ i ]   = Math.floor( (offset+Math.random()*STARTING_AREA) * W ) // x
   vants[ i+1 ] = Math.floor( (offset+Math.random()*STARTING_AREA) * H ) // y
   vants[ i+2 ] = 0 // direction 
-  vants[ i+3 ] = Math.round( Math.random()  ) // vant behavior type 
+  vants[ i+3 ] = Math.floor( Math.random() * 3. ) // vant behavior type 
 }
 
 const sg = await seagulls.init()
