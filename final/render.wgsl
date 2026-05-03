@@ -9,8 +9,8 @@ struct VertexOutput {
 };
 
 struct Particle {
-  pos: vec2f,
-  speed: vec2f,
+  pos: vec3f,
+  speed: vec3f,
   droplet: f32,
   padding: f32
 };
@@ -37,26 +37,45 @@ fn rotate(v: vec4f, angle: f32) -> vec4f{
   return rotation_matrix * v;
 }
 
+
 @vertex 
 fn vs( input: VertexInput ) ->  VertexOutput {
   let aspect = res.y / res.x;
   let p = state[ input.instance ];
   let isDroplet = p.droplet > 0.5;
-  let scale = select(0.015, 0.005, isDroplet);
-
-  let size = input.pos * scale;
+  var scale = select(0.015, 0.005, isDroplet);
   
 
-  var output: VertexOutput;
-  var vertex = vec4f( p.pos.x - size.x * aspect, p.pos.y + size.y * 10, 0., 1.);
+  
+  //var vertex = vec4f( p.pos.x - size.x * aspect, p.pos.y + size.y * 10, 0., 1.);
   
   //vertex = rotate(vertex, angle);
 
+  let cameraZ = 2.5;
+  let z = p.pos.z + cameraZ;
+  let projected = p.pos.xy / max(0.01,z);
+
+  scale = scale / max(0.01, z);
+
+  let size = input.pos * scale;
+
+  var vertex = vec4f(
+    projected.x * aspect + size.x,
+    projected.y + size.y,
+    0.0,
+    1.0
+  );
+
+
+  var output: VertexOutput;
   output.position = vertex;
 
   let rainColor = mix(vec3f(0.,0.,.4), vec3f(.2,0.,.7), (p.pos.y+1.0)/1.5);
   let splashColor = vec3f(0.3, 0.3, 1.0);
   output.color = select(rainColor, splashColor, p.droplet > 0.5);
+
+  //test
+  //output.position = vec4f(p.pos*0.1, 1.0);
 
   return output; 
 }
@@ -64,5 +83,5 @@ fn vs( input: VertexInput ) ->  VertexOutput {
 @fragment 
 fn fs( input: VertexOutput) -> @location(0) vec4f {;
   let color = input.color;
-  return vec4f( color, .6 );
+  return vec4f( color, .8 );
 }

@@ -7,17 +7,25 @@ const sg = await gulls.init(),
       compute_shader = await gulls.import( './compute.wgsl' ),
       raymarch_shader = await gulls.import( './raymarch.wgsl' )
 
-const NUM_PARTICLES = 1024, 
-      NUM_PROPERTIES = 6, 
+const NUM_PARTICLES = 2048, 
+      NUM_PROPERTIES = 8, 
       state = new Float32Array( NUM_PARTICLES * NUM_PROPERTIES )
 
 for( let i = 0; i < NUM_PARTICLES * NUM_PROPERTIES; i+= NUM_PROPERTIES ) {
-  state[ i ] = -2 + Math.random() * 4
-  state[ i + 1 ] = -1 + Math.random() * 4
-  state[ i + 2 ] = 0
-  state[ i + 3 ] = -10
-  state[ i + 4 ] = 0
-  state[ i + 5 ] = 0
+  state[i + 0] = -5 + Math.random() * 15  //pos.x
+  state[i + 1] =  5 + Math.random() * 5      //pos.y
+  state[i + 2] = -2 + Math.random() * 4   //pos.z
+
+  //velocity
+  state[i + 3] = 0
+  state[i + 4] = -0.02
+  state[i + 5] = 0
+
+  //droplet state
+  state[i + 6] = 0
+
+  //padding
+  state[i + 7] = 0
 }
 
 const state_b = sg.buffer( state ),
@@ -62,7 +70,8 @@ const compute = sg.compute({
   data:[
     res_u,
     state_b,
-    slider_u
+    slider_u,
+    frame_u
   ],
   dispatchCount: [ dc, dc, 1 ] 
 
@@ -71,4 +80,5 @@ const compute = sg.compute({
 slider.oninput = ()=> slider_u.value = slider.value
 
 //sg.run( compute, render )
-sg.run ( compute, raymarch, rain )
+//sg.run ( compute, raymarch, rain )
+sg.run( compute, rain )
