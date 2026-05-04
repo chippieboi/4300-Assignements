@@ -5,15 +5,16 @@ import { default as gulls } from './gulls.js'
 const sg = await gulls.init(),
       render_shader  = await gulls.import( './render.wgsl' ),
       compute_shader = await gulls.import( './compute.wgsl' ),
-      raymarch_shader = await gulls.import( './raymarch.wgsl' )
+      raymarch_shader = await gulls.import( './raymarch.wgsl' ),
+      combine_shader = await gulls.import('./combine.wgsl')
 
 const NUM_PARTICLES = 2048, 
-      NUM_PROPERTIES = 8, 
+      NUM_PROPERTIES = 9, 
       state = new Float32Array( NUM_PARTICLES * NUM_PROPERTIES )
 
 for( let i = 0; i < NUM_PARTICLES * NUM_PROPERTIES; i+= NUM_PROPERTIES ) {
   state[i + 0] = -5 + Math.random() * 15  //pos.x
-  state[i + 1] =  5 + Math.random() * 5      //pos.y
+  state[i + 1] =  7 + (Math.random() * 5)      //pos.y
   state[i + 2] = -2 + Math.random() * 4   //pos.z
 
   //velocity
@@ -26,6 +27,7 @@ for( let i = 0; i < NUM_PARTICLES * NUM_PROPERTIES; i+= NUM_PROPERTIES ) {
 
   //padding
   state[i + 7] = 0
+  state[i + 8] = 0
 }
 
 const state_b = sg.buffer( state ),
@@ -46,9 +48,12 @@ const raymarch = await sg.render({
     res_u
   ],
   onframe() { frame_u.value++ },
-  blend: true,
+  //blend: true,
   copy: offscreen_t
 })
+
+const back2 = new Float32Array(sg.height * sg.width * 4);
+const rain_t = sg.texture( back2 )
 
 const rain = await sg.render({
   shader: render_shader,
@@ -56,10 +61,26 @@ const rain = await sg.render({
     frame_u,
     res_u,
     state_b,
-    slider_u
+    slider_u,
   ],
   onframe() { frame_u.value++ },
   count: NUM_PARTICLES,
+  //blend: true,
+  clearColor: [0.0, 0.0, 0.0, 892735698761235.0],
+  copy: rain_t
+})
+
+
+const sampler_s = sg.sampler();
+
+const combine = await sg.render({
+  shader: gulls.constants.vertex + combine_shader,
+  data: [
+    res_u,
+    sampler_s,
+    rain_t,
+    offscreen_t
+  ],
   blend: true
 })
 
@@ -81,4 +102,4 @@ slider.oninput = ()=> slider_u.value = slider.value
 
 //sg.run( compute, render )
 //sg.run ( compute, raymarch, rain )
-sg.run( compute, rain )
+sg.run( compute, raymarch, rain, combine )

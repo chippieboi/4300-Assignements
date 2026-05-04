@@ -6,13 +6,15 @@ struct VertexInput {
 struct VertexOutput {
   @builtin(position) position: vec4f,
   @location(0) color: vec3f,
+  @location(1) depth: f32,
 };
 
 struct Particle {
   pos: vec3f,
   speed: vec3f,
   droplet: f32,
-  padding: f32
+  padding: f32,
+  padding2: f32
 };
 
 @group(0) @binding(0) var<uniform> frame: f32;
@@ -56,7 +58,6 @@ fn vs( input: VertexInput ) ->  VertexOutput {
   let projected = p.pos.xy / max(0.01,z);
 
   scale = scale / max(0.01, z);
-
   let size = input.pos * scale;
 
   var vertex = vec4f(
@@ -77,11 +78,13 @@ fn vs( input: VertexInput ) ->  VertexOutput {
   //test
   //output.position = vec4f(p.pos*0.1, 1.0);
 
+  output.depth = z;
+
   return output; 
 }
 
 @fragment 
 fn fs( input: VertexOutput) -> @location(0) vec4f {;
-  let color = input.color;
-  return vec4f( color, .8 );
+  let rendered = input.color;
+  return vec4f( rendered, input.depth );
 }

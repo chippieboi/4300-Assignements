@@ -9,7 +9,8 @@ fn scene( p:vec3f ) -> f32 {
   var pz = p;
   pz.z += frame / 200.f;
   pz.x += .25;
-  var d = sub(sphere( repeat(pz, vec3f(.5)), .2), sphere(p,2.));
+  var d = sphere(p, 2.);
+  //d = sub(sphere( repeat(pz, vec3f(.5)), .2), sphere(p,2.));
   d = min( d, plane( p, vec3f(0.,-1.,0.),1. ) );
 
   return d; 
@@ -99,4 +100,5 @@ fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {
   }
 
   return vec4f( color, 1. );
+  //return vec4f( color, p.z );
 }

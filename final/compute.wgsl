@@ -2,7 +2,8 @@ struct Particle {
   pos: vec3f,
   vel: vec3f,
   droplet: f32,
-  padding: f32
+  padding: f32,
+  padding2: f32
 };
 
 @group(0) @binding(0) var<uniform> res:   vec2f;
@@ -34,14 +35,20 @@ fn rotate(v: vec4f, angle: f32) -> vec4f{
 
 //========================================================================================================
 //raymarch contact points
-fn scene( p:vec3f ) -> f32 {
+fn scene( p2:vec3f ) -> f32 {
+  var p = p2;
+  p.z = -p.z;
+  p = p + vec3f(0., 0., 2.5);
   var pz = p;
   pz.z += frame / 200.f;
   pz.x += .25;
-  var d = sub(sphere( repeat(pz, vec3f(.5)), .2), sphere(p,2.));
-  d = min( d, plane( p, vec3f(0.,-1.,0.),1. ) );
+  var d = sphere(p, 2.);
+  //d = sub(sphere( repeat(pz, vec3f(.5)), .2), sphere(p,2.));
+  d = min( d, plane( p, vec3f(0.,1.,0.),1.5 ) );
 
-  return d; 
+  var s = plane( p, vec3f(0.,1.,0.),1.5 );
+
+  return d;
 }
 
 fn sub( a:f32, b:f32 ) -> f32 {
@@ -84,8 +91,9 @@ fn cs(@builtin(global_invocation_id) cell:vec3u)  {
     vel.y += gravity;
     pos += vel;
 
-    if (pos.y <= floor) {
-      pos.y = floor;
+    //if (pos.y <= floor) {
+    if (scene(pos) <= 0.) {
+      pos.y -= scene(pos);
 
       droplet = 1.0;
 
@@ -102,10 +110,13 @@ fn cs(@builtin(global_invocation_id) cell:vec3u)  {
     vel.y += gravity;
     pos += vel;
 
-    if (pos.y <= floor) {
-      pos.y = 7.0;
+
+    //it hit the ground after bounce, go back into sky
+    //if (pos.y <= floor) {
+    if (scene(pos) <= 0.) {
+      pos.y = 7.0 + fract(sin(f32(i)*31.872) * 4852.4515);
       pos.x = -7.0 + fract(sin(f32(i)*50.872) * 63592.4515) * 15.0;
-      pos.z = 1.5 + (fract(sin(f32(i)*836.7)*3050.0)-0.5)*5.0;
+      pos.z = 1.5 + (fract(sin(f32(i)*836.7)*3050.0)-0.5)*6.0;
 
       droplet = 0.0;
       vel = vec3f(0.0, -0.02, 0.0);
