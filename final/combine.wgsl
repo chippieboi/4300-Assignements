@@ -10,5 +10,11 @@ fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {;
   let rain = textureSample(rainBuffer, currentSampler, uv);
   let march = textureSample(marchBuffer, currentSampler, uv);
   let out = rain + march;
-  return vec4f(out);
+  if (rain.w > march.w) {
+    return rain;
+  }
+  else{
+    return rain + march;
+  }
+  //return vec4f(out);
 }

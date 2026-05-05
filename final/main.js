@@ -94,7 +94,7 @@ const compute = sg.compute({
     slider_u,
     frame_u
   ],
-  dispatchCount: [ dc, dc, 1 ] 
+  dispatchCount: [ dc, 1, 1 ] 
 
 })
 

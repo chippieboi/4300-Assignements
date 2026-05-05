@@ -73,10 +73,13 @@ fn plane( point:vec3f, normal:vec3f, distance:f32 ) -> f32 {
 
 
 @compute
-@workgroup_size(8,8)
+@workgroup_size(64,1)
 
 fn cs(@builtin(global_invocation_id) cell:vec3u)  {
-  let i = cellindex( cell );
+  let i = cell.x;
+  if (i > arrayLength(&state)){
+    return;
+  }
   let p = state[ i ];
   var pos = p.pos;
   var vel = p.vel;
@@ -91,7 +94,6 @@ fn cs(@builtin(global_invocation_id) cell:vec3u)  {
     vel.y += gravity;
     pos += vel;
 
-    //if (pos.y <= floor) {
     if (scene(pos) <= 0.) {
       pos.y -= scene(pos);
 
@@ -112,7 +114,6 @@ fn cs(@builtin(global_invocation_id) cell:vec3u)  {
 
 
     //it hit the ground after bounce, go back into sky
-    //if (pos.y <= floor) {
     if (scene(pos) <= 0.) {
       pos.y = 7.0 + fract(sin(f32(i)*31.872) * 4852.4515);
       pos.x = -7.0 + fract(sin(f32(i)*50.872) * 63592.4515) * 15.0;
