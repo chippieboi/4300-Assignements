@@ -6,7 +6,8 @@ const sg = await gulls.init(),
       render_shader  = await gulls.import( './render.wgsl' ),
       compute_shader = await gulls.import( './compute.wgsl' ),
       raymarch_shader = await gulls.import( './raymarch.wgsl' ),
-      combine_shader = await gulls.import('./combine.wgsl')
+      combine_shader = await gulls.import('./combine.wgsl'),
+      process_shader = await gulls.import('./blur.wgsl')
 
 const NUM_PARTICLES = 2048, 
       NUM_PROPERTIES = 9, 
@@ -17,17 +18,21 @@ for( let i = 0; i < NUM_PARTICLES * NUM_PROPERTIES; i+= NUM_PROPERTIES ) {
   state[i + 1] =  7 + (Math.random() * 5)      //pos.y
   state[i + 2] = -2 + Math.random() * 4   //pos.z
 
-  //velocity
+  //padding
   state[i + 3] = 0
-  state[i + 4] = -0.02
-  state[i + 5] = 0
 
-  //droplet state
+  //velocity
+  state[i + 4] = 0
+  state[i + 5] = -0.02
   state[i + 6] = 0
 
-  //padding
   state[i + 7] = 0
+  //droplet state
   state[i + 8] = 0
+
+  //padding
+  
+
 }
 
 const state_b = sg.buffer( state ),
@@ -72,6 +77,8 @@ const rain = await sg.render({
 
 
 const sampler_s = sg.sampler();
+const back3 = new Float32Array(sg.height * sg.width * 4);
+const combine_t = sg.texture( back2 )
 
 const combine = await sg.render({
   shader: gulls.constants.vertex + combine_shader,
@@ -81,7 +88,45 @@ const combine = await sg.render({
     rain_t,
     offscreen_t
   ],
-  blend: true
+  blend: true,
+  copy: combine_t
+})
+
+const back4 = new Float32Array(sg.height * sg.width * 4);
+const blur_t = sg.texture( back2 )
+
+//BLUR
+
+const blurMax = 3
+
+// blur on X axis
+// make sure to copy this pass to texture
+const processX = await sg.render({
+  shader: gulls.constants.vertex + process_shader,
+  data:[
+    res_u,
+    sg.uniform([ blurMax, 0 ]),
+    combine_t,
+    sg.sampler(),
+    rain_t,
+    offscreen_t
+  ],
+  copy: blur_t
+})
+
+// blur on y axis
+// no need for copy as this pass
+// is final and rendered to screen
+const processY = await sg.render({
+  shader: gulls.constants.vertex + process_shader,
+  data:[
+    res_u,
+    sg.uniform([ 0, blurMax ]),
+    blur_t,
+    sg.sampler(),
+    rain_t,
+    offscreen_t
+  ],
 })
 
 const dc = Math.ceil( NUM_PARTICLES / 64 )
@@ -102,4 +147,4 @@ slider.oninput = ()=> slider_u.value = slider.value
 
 //sg.run( compute, render )
 //sg.run ( compute, raymarch, rain )
-sg.run( compute, raymarch, rain, combine )
+sg.run( compute, raymarch, rain, combine, processX, processY )

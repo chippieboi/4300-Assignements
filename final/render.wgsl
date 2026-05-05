@@ -11,10 +11,11 @@ struct VertexOutput {
 
 struct Particle {
   pos: vec3f,
-  speed: vec3f,
-  droplet: f32,
   padding: f32,
-  padding2: f32
+  speed: vec3f,
+  padding2: f32,
+  droplet: f32,
+
 };
 
 @group(0) @binding(0) var<uniform> frame: f32;
@@ -44,6 +45,15 @@ fn rotate(v: vec4f, angle: f32) -> vec4f{
 fn vs( input: VertexInput ) ->  VertexOutput {
   let aspect = res.y / res.x;
   let p = state[ input.instance ];
+
+  if(input.instance >= arrayLength(&state)){
+    var output: VertexOutput;
+    output.position = vec4f(10000., 10000., 0., 0.);
+    output.color = vec3f(1., 0., 0.);
+    output.depth = 1000.;
+    return output;
+  }
+
   let isDroplet = p.droplet > 0.5;
   var scale = select(0.015, 0.005, isDroplet);
   

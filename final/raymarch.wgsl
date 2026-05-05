@@ -1,14 +1,14 @@
 const MAX_DIST : f32 = 10.; 
-const MIN_DIST : f32 = .01;
-const MAX_STEPS: u32 = 20u;
+const MIN_DIST : f32 = .001;
+const MAX_STEPS: u32 = 50u;
 
 @group(0) @binding(0) var<uniform> frame: f32;
 @group(0) @binding(1) var<uniform> res:   vec2f;
 
 fn scene( p:vec3f ) -> f32 {
   var pz = p;
-  pz.z += frame / 200.f;
-  pz.x += .25;
+  pz.z += frame / 500.f;
+  pz.x += .75;
   var d = sphere(p - vec3f(-0., 0., 0.), 2.);
   //d = sub(sphere( repeat(pz, vec3f(.5)), .2), sphere(p,2.));
   d = min( d, plane( p, vec3f(0.,-1.,0.),1. ) );
@@ -59,6 +59,9 @@ fn raymarch(rayorigin : vec3f, raydirection: vec3f ) -> f32 {
   return totaldistance;
 }
 
+fn mymod(x: f32, y: f32) -> f32 {
+        return x - y * floor(x/y);
+}
 
 @fragment 
 fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {
@@ -85,9 +88,10 @@ fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {
   var color = vec3f(0.,0.,0.);
 
   // color pixel if intersection is within tolerance
+  let PI = 3.14159265358979;
   if( dst < MAX_DIST ) {
     let nor = calcNormal(p);
-    let lightposition = vec3f(2,-2,2);
+    let lightposition = vec3f( (sin(mymod(frame / 100., 2*PI)) * 6) ,-5, (cos(mymod(frame / 100., 2*PI)) * 6));
 		let dir = normalize( lightposition - p );
 		let lightStrength = clamp( dot(nor,dir),0.,1.);
     color = vec3f( lightStrength );
@@ -99,6 +103,6 @@ fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {
     color = bgcolor;
   }
 
-  return vec4f( color, 1. );
-  //return vec4f( color, p.z );
+  //return vec4f( color, 1. );
+  return vec4f( color, p.z );
 }

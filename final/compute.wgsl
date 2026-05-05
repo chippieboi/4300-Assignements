@@ -1,9 +1,11 @@
 struct Particle {
   pos: vec3f,
-  vel: vec3f,
-  droplet: f32,
   padding: f32,
-  padding2: f32
+  vel: vec3f,
+  padding2: f32,
+  droplet: f32,
+  
+  
 };
 
 @group(0) @binding(0) var<uniform> res:   vec2f;
@@ -77,7 +79,7 @@ fn plane( point:vec3f, normal:vec3f, distance:f32 ) -> f32 {
 
 fn cs(@builtin(global_invocation_id) cell:vec3u)  {
   let i = cell.x;
-  if (i > arrayLength(&state)){
+  if (i >= arrayLength(&state)){
     return;
   }
   let p = state[ i ];
