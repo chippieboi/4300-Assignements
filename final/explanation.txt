@@ -1,0 +1,24 @@
+Please include 400-500 words describing the general process of implementing your project and any challenges you faced, as well as your technical and aesthetic goals.
+Use this text justify the work you put into the project, which should be about ~30 hours over the next two weeks.
+
+I started with the idea of creating a 3D scene from shaders. I really liked my rain shader and wanted to improve it, and took a lot of inspiration from
+the raymarch shader we did in class. So my idea was to combine the two and have the rain particle system interact with the raymarched terrain.
+My rain particle system was adapted from my last assignment, turning the 2D rain system into a fully 3D system. The rain particles are projected into 3D
+using a cameraZ value, and are displayed billboard style. The raymarching is the same as the in-class exercise. My rain particles have two states:
+falling from the sky, and bouncing. The particle swaps from falling to bouncing when it hits the ground, and when it hits the ground while bouncing,
+it returns to falling. So the rain compute shader simply has the same math functions as the raymarcher to detect when the particle is inside the terrain.
+The tricky part was combining the two. The rain and raymarch are both render passes, so I didn't want to put them into the same render pass. I wanted to
+keep them separate. I ran into a lot of issues with saving the raymarch into a buffer and trying to pass it into the rain shader. The main issue with this
+was that the rain shader would only set colors to the pixels inside the vertices from the vertex shader. I ended up having to write a simple combine shader
+that took in buffers of the rain and raymarch render passes and combines them, including depth, which got added into the alpha values of the render
+vec4f returns. After that, I had to fix a blue square in the middle of my screen bug. It ended up being a bunch of small fixes, like aligning the
+Particle structs in the rain compute and shader to 16 bytes each. So vec3f, padding, vec3f, padding instead of vec3f, vec3f, padding, padding. I also
+added checks in the compute and vertex shader for if the particle is out of the list and to then drop it, which fixed the blue square issue. After fixing
+most of the render issues, I added a blur. This one didn't take too long to initially set up. I got the blur working pretty quick, but changing the blur so
+it had a depth of field was really finicky. Even now I do not think what I have is well coded. I already had the depth values at each pixel for the rain
+and raymarch, so I could compare them and find the closest depth to the camera, display it, and then blur if the depth distance from the camera was great enough.
+The issue is it was really hard to find a good value for the distance toggle, and ended up only mostly working, but it does work.
+
+Overall I think I accomplished my aesthetic and technical goals. I combined raymarching with a particle system in a fun way, and did something unorthodox.
+The rain also looks good to me, and I just like watching it. I also added a rotating light over the scene to make it a bit more dynamic, but that didn't take
+too long. Like 45 minutes because I couldn't figure out how to make it go in a circle.
